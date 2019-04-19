@@ -1,5 +1,6 @@
 package com.sorsix.urlShortenerPgs.controllers;
 
+import com.sorsix.urlShortenerPgs.models.Error;
 import com.sorsix.urlShortenerPgs.models.NewShort;
 import com.sorsix.urlShortenerPgs.models.ShortUrl;
 import com.sorsix.urlShortenerPgs.services.ShortUrlService;
@@ -23,12 +24,11 @@ public class ShortUrlController {
 
     @PostMapping
     public ResponseEntity addNewShort(@RequestBody NewShort newShort) {
-
         try {
             new URL(newShort.newShortUrl).toURI();
             return ResponseEntity.ok().body(shortUrlService.newShortUrl(newShort.newShortUrl));
         } catch (Exception exc) {
-            return ResponseEntity.badRequest().body("{\"Error\":\"Invalid URL\"}");
+            return ResponseEntity.badRequest().body(new Error("Invalid URL"));
         }
 
     }
@@ -42,15 +42,16 @@ public class ShortUrlController {
     public ResponseEntity getShortUrl(@PathVariable String shortUrl, HttpServletResponse response) {
         try {
             response.sendRedirect(shortUrlService.convertShortToOriginal(shortUrl));
-            return ResponseEntity.ok(shortUrlService.convertShortToOriginal(shortUrl));
+//            return ResponseEntity.ok(shortUrlService.convertShortToOriginal(shortUrl));
+            return null;
         } catch (Exception exc) {
             if (exc.getMessage() == null) {
-                return ResponseEntity.badRequest().body("{\"error\":\"No short url found for given input\"}");
+                return ResponseEntity.badRequest().body(new Error("No short url found for given input"));
             }
             if (exc.getMessage().contains("For input string")) {
-                return ResponseEntity.badRequest().body("{\"error\":\"Wrong Format\"}");
+                return ResponseEntity.badRequest().body(new Error("Wrong Format"));
             }
-            return ResponseEntity.badRequest().body("{\"error\":\"" + exc.getMessage() + "\"}");
+            return ResponseEntity.badRequest().body(new Error(exc.getMessage()));
         }
 
     }
