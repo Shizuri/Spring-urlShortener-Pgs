@@ -14,6 +14,9 @@ public final class ShortUrl {
     @Column(name = "original_url") //new
     private String originalUrl;
 
+    @Column(name = "number_of_visits")
+    private Long numberOfVisits = 0L;
+
     public ShortUrl(){
 
     }
@@ -38,11 +41,20 @@ public final class ShortUrl {
         this.originalUrl = originalUrl;
     }
 
+    public Long getNumberOfVisits() {
+        return numberOfVisits;
+    }
+
+    public void setNumberOfVisits(Long numberOfVisits) {
+        this.numberOfVisits = numberOfVisits;
+    }
+
     @Override
     public String toString() {
         return "ShortUrl{" +
                 "shortUrl=" + shortUrl +
                 ", originalUrl='" + originalUrl + '\'' +
+                ", numberOfVisits=" + numberOfVisits +
                 '}';
     }
 }

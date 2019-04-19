@@ -5,6 +5,7 @@ import com.sorsix.urlShortenerPgs.persistencies.ShortUrlRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class ShortUrlService {
         return shortUrlRepository.findAll();
     }
 
+    @Transactional
     public String convertShortToOriginal(String shortUrl) {
         long shortNumber = Long.parseLong(shortUrl);
         List<ShortUrl> shorts = getAllShorts();
@@ -44,10 +46,15 @@ public class ShortUrlService {
             if (s.getShortUrl().equals(shortNumber)) {
                 logger.info("Was looking for value [{}], found [{}]", shortUrl, s);
                 result = s;
+                shortUrlRepository.findById(s.getShortUrl()).map(x -> {
+                    x.setNumberOfVisits(x.getNumberOfVisits() + 1);
+                    logger.info("Number of visits on site [{}] is [{}]", s.getOriginalUrl(), s.getNumberOfVisits());
+                    return x;
+                });
                 break;
             }
         }
-        if(result == null){
+        if (result == null) {
             logger.info("Didn't find an entry for the shortURL: [{}]", shortUrl);
         }
         return result.getOriginalUrl();
