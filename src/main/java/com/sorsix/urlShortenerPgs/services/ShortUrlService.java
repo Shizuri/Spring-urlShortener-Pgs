@@ -7,13 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ShortUrlService {
 
-    static final Logger logger = LoggerFactory.getLogger(ShortUrlService.class);
+    static final private Logger logger = LoggerFactory.getLogger(ShortUrlService.class);
 
     private final ShortUrlRepository shortUrlRepository;
 
@@ -25,7 +24,7 @@ public class ShortUrlService {
         List<ShortUrl> shorts = getAllShorts();
         for (ShortUrl shortUrl : shorts) {
             if (shortUrl.getOriginalUrl().equals(url)) {
-                logger.info("Found DUPLICATE URL: [{}]. WIll not create a new one", shortUrl);
+                logger.info("Found DUPLICATE URL: [{}]. Will not create a new one", shortUrl);
                 return shortUrl;
             }
         }

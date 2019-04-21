@@ -1,17 +1,19 @@
 package com.sorsix.urlShortenerPgs.models;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "short_url") //new
+@Table(name = "short_url")
 public final class ShortUrl {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "short_url") //new
+    @Column(name = "short_url")
     private Long shortUrl;
 
-    @Column(name = "original_url") //new
+    @Column(name = "original_url", columnDefinition = "text")
+    @NotNull
     private String originalUrl;
 
     @Column(name = "number_of_visits")

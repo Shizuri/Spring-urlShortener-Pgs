@@ -42,7 +42,6 @@ public class ShortUrlController {
     public ResponseEntity getShortUrl(@PathVariable String shortUrl, HttpServletResponse response) {
         try {
             response.sendRedirect(shortUrlService.convertShortToOriginal(shortUrl));
-//            return ResponseEntity.ok(shortUrlService.convertShortToOriginal(shortUrl));
             return null;
         } catch (Exception exc) {
             if (exc.getMessage() == null) {
