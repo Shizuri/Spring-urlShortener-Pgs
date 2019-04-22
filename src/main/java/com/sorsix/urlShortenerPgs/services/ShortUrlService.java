@@ -24,7 +24,7 @@ public class ShortUrlService {
         List<ShortUrl> shorts = getAllShorts();
         for (ShortUrl shortUrl : shorts) {
             if (shortUrl.getOriginalUrl().equals(url)) {
-                logger.info("Found DUPLICATE URL: [{}]. Will not create a new one", shortUrl);
+                logger.warn("Found DUPLICATE URL: [{}]. Will not create a new one", shortUrl);
                 return shortUrl;
             }
         }
@@ -50,7 +50,6 @@ public class ShortUrlService {
                     logger.info("Number of visits on site [{}] is [{}]", s.getOriginalUrl(), s.getNumberOfVisits());
                     return x;
                 });
-                break;
             }
         }
         if (result == null) {
