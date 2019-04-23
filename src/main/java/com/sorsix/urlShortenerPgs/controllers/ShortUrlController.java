@@ -1,9 +1,12 @@
 package com.sorsix.urlShortenerPgs.controllers;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.sorsix.urlShortenerPgs.models.Error;
 import com.sorsix.urlShortenerPgs.models.NewShort;
 import com.sorsix.urlShortenerPgs.models.ShortUrl;
 import com.sorsix.urlShortenerPgs.services.ShortUrlService;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.hibernate.validator.constraints.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -11,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -27,13 +30,12 @@ public class ShortUrlController {
     }
 
     @PostMapping
-    public ResponseEntity addNewShort(@RequestBody NewShort newShort) {
+    public ResponseEntity addNewShort(@RequestBody String url) {
         try {
-            new URL(newShort.newShortUrl).toURI();
-            return ResponseEntity.ok().body(shortUrlService.newShortUrl(newShort.newShortUrl));
+            return ResponseEntity.ok().body(shortUrlService.newShortUrl(url));
         } catch (Exception exc) {
             logger.warn("Probable invalid URL with exception [{}]", exc.getMessage());
-            return ResponseEntity.badRequest().body(new Error("Invalid URL"));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("Error", "Invalid URL"));
         }
 
     }
@@ -50,12 +52,12 @@ public class ShortUrlController {
             return null;
         } catch (Exception exc) {
             logger.warn("There was an exception [{}]", exc.getMessage());
-            if (exc.getMessage() == null) {
-                return ResponseEntity.badRequest().body(new Error("No short url found for given input"));
-            }
-            if (exc.getMessage().contains("For input string")) {
-                return ResponseEntity.badRequest().body(new Error("Wrong Format"));
-            }
+//            if (exc.getMessage() == null) {
+//                return ResponseEntity.badRequest().body(new Error("No short url found for given input"));
+//            }
+//            if (exc.getMessage().contains("For input string")) {
+//                return ResponseEntity.badRequest().body(new Error("Wrong Format"));
+//            }
             return ResponseEntity.badRequest().body(new Error(exc.getMessage()));
         }
 

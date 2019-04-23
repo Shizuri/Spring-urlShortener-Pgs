@@ -13,23 +13,26 @@ import java.util.List;
 public class ShortUrlService {
 
     static final private Logger logger = LoggerFactory.getLogger(ShortUrlService.class);
-
     private final ShortUrlRepository shortUrlRepository;
+    private long counter = 0L;
 
     public ShortUrlService(ShortUrlRepository shortUrlRepository) {
         this.shortUrlRepository = shortUrlRepository;
     }
 
     public ShortUrl newShortUrl(String url) {
-        List<ShortUrl> shorts = getAllShorts();
-        for (ShortUrl shortUrl : shorts) {
-            if (shortUrl.getOriginalUrl().equals(url)) {
-                logger.warn("Found DUPLICATE URL: [{}]. Will not create a new one", shortUrl);
-                return shortUrl;
-            }
+        if(shortUrlRepository.getMaxShortUrl() != null){
+            counter = shortUrlRepository.getMaxShortUrl();
         }
+
+        ShortUrl shortUrl = shortUrlRepository.findByOriginalUrl(url);
+        if(shortUrl != null){
+            logger.info("Found DUPLICATE URL: [{}]. Will not create a new one", shortUrl);
+            return shortUrl;
+        }
+
         logger.info("Saving URL: [{}]", url);
-        return shortUrlRepository.save(new ShortUrl(url));
+        return shortUrlRepository.save(new ShortUrl(++counter, url));
     }
 
     public List<ShortUrl> getAllShorts() {
@@ -37,24 +40,14 @@ public class ShortUrlService {
     }
 
     @Transactional
-    public String convertShortToOriginal(String shortUrl) {
-        long shortNumber = Long.parseLong(shortUrl);
-        List<ShortUrl> shorts = getAllShorts();
-        ShortUrl result = null;
-        for (ShortUrl s : shorts) {
-            if (s.getShortUrl().equals(shortNumber)) {
-                logger.info("Was looking for value [{}], found [{}]", shortUrl, s);
-                result = s;
-                shortUrlRepository.findById(s.getShortUrl()).map(x -> {
-                    x.setNumberOfVisits(x.getNumberOfVisits() + 1);
-                    logger.info("Number of visits on site [{}] is [{}]", s.getOriginalUrl(), s.getNumberOfVisits());
-                    return x;
-                });
-            }
+    public String convertShortToOriginal(String shortUrl){
+        ShortUrl shortUrlFromRepo = shortUrlRepository.findByShortUrl(Long.parseLong(shortUrl));
+        if(shortUrlFromRepo == null){
+            logger.warn("Didn't find an entry for the shortURL: [{}]", shortUrl);
+            return "No short url found for given input";
+        } else {
+            shortUrlFromRepo.setNumberOfVisits(shortUrlFromRepo.getNumberOfVisits() + 1);
+            return shortUrlFromRepo.getOriginalUrl();
         }
-        if (result == null) {
-            logger.info("Didn't find an entry for the shortURL: [{}]", shortUrl);
-        }
-        return result.getOriginalUrl();
     }
 }

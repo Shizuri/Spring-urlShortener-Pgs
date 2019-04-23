@@ -15,14 +15,9 @@ public class LoadDatabase {
 
     @Bean
     CommandLineRunner initDatabase(ShortUrlController controller){
-        NewShort youtube = new NewShort();
-        youtube.newShortUrl = "https://www.youtube.com";
-        NewShort javabrains = new NewShort();
-        javabrains.newShortUrl = "https://javabrains.io/";
-
         return args -> {
-            logger.info("Preloading youtube " + controller.addNewShort(youtube));
-            logger.info("Preloading javabrains " + controller.addNewShort(javabrains));
+            logger.info("Preloading example " + controller.addNewShort("https://www.example.com"));
+            logger.info("Preloading javabrains " + controller.addNewShort("https://javabrains.io/"));
         };
 
     }
