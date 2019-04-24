@@ -1,7 +1,6 @@
 package com.sorsix.urlShortenerPgs.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sorsix.urlShortenerPgs.models.NewShort;
 import com.sorsix.urlShortenerPgs.services.ShortUrlService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,12 +53,9 @@ public class ShortUrlControllerTest {
 
     @Test
     public void postRequestIsGood() throws Exception {
-        NewShort newShort = new NewShort();
-        newShort.newShortUrl = "https://www.twitter.com";
-
         this.mockMvc.perform(post("/api/shorturl/")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(newShort)))
+                .content(objectMapper.writeValueAsString("https://www.twitter.com")))
                 .andExpect(status().isOk());
     }
 
@@ -72,15 +68,12 @@ public class ShortUrlControllerTest {
 
     @Test
     public void postRequestFormatIsWrong() throws Exception {
-        NewShort newShort = new NewShort();
-        newShort.newShortUrl = "test";
-
         this.mockMvc.perform(post("/api/shorturl/")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(newShort)))
+                .content(objectMapper.writeValueAsString("test")))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("error").value("Invalid URL"));
+                .andExpect(jsonPath("Error").value("Invalid URL"));
     }
 
 }

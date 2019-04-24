@@ -1,12 +1,7 @@
 package com.sorsix.urlShortenerPgs.controllers;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.sorsix.urlShortenerPgs.models.Error;
-import com.sorsix.urlShortenerPgs.models.NewShort;
 import com.sorsix.urlShortenerPgs.models.ShortUrl;
 import com.sorsix.urlShortenerPgs.services.ShortUrlService;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.hibernate.validator.constraints.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -52,13 +47,7 @@ public class ShortUrlController {
             return null;
         } catch (Exception exc) {
             logger.warn("There was an exception [{}]", exc.getMessage());
-//            if (exc.getMessage() == null) {
-//                return ResponseEntity.badRequest().body(new Error("No short url found for given input"));
-//            }
-//            if (exc.getMessage().contains("For input string")) {
-//                return ResponseEntity.badRequest().body(new Error("Wrong Format"));
-//            }
-            return ResponseEntity.badRequest().body(new Error(exc.getMessage()));
+            return ResponseEntity.badRequest().body(Collections.singletonMap("Error", exc.getMessage()));
         }
 
     }

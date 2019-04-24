@@ -1,7 +1,6 @@
 package com.sorsix.urlShortenerPgs.persistencies;
 
 import com.sorsix.urlShortenerPgs.controllers.ShortUrlController;
-import com.sorsix.urlShortenerPgs.models.NewShort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
