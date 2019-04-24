@@ -40,11 +40,18 @@ public class ShortUrlService {
     }
 
     @Transactional
-    public String convertShortToOriginal(String shortUrl){
-        ShortUrl shortUrlFromRepo = shortUrlRepository.findByShortUrl(Long.parseLong(shortUrl));
+    public String convertShortToOriginal(String shortUrl) throws Exception{
+        ShortUrl shortUrlFromRepo = null;
+        try {
+            shortUrlFromRepo = shortUrlRepository.findByShortUrl(Long.parseLong(shortUrl));
+        }catch (Exception exc){
+            logger.warn("[{}] is not valid input", shortUrl);
+            throw new Exception(shortUrl + " is not valid input");
+        }
+
         if(shortUrlFromRepo == null){
             logger.warn("Didn't find an entry for the shortURL: [{}]", shortUrl);
-            return "No short url found for given input";
+            throw new Exception("No short url found for: " + shortUrl);
         } else {
             shortUrlFromRepo.setNumberOfVisits(shortUrlFromRepo.getNumberOfVisits() + 1);
             return shortUrlFromRepo.getOriginalUrl();
